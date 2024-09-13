@@ -15,17 +15,23 @@ namespace AssemblyValidatorAPI.Controllers
         [HttpPost]
         public ActionResult<List<ValidationResult>> ValidateAssemblies([FromBody] ValidationRequest request)
         {
+            if (string.IsNullOrEmpty(request.Path))
+            {
+                return BadRequest(new ValidationResult
+                {
+                    Status = ValidationStatus.Error,
+                    Message = "Provided path is null or empty."
+                });
+            }
+
             var results = new List<ValidationResult>();
 
             if (!Directory.Exists(request.Path))
             {
-                return BadRequest(new List<ValidationResult>
+                return BadRequest(new ValidationResult
                 {
-                    new ValidationResult
-                    {
-                        Status = ValidationStatus.Error,
-                        Message = "Provided path does not exist."
-                    }
+                    Status = ValidationStatus.Error,
+                    Message = "Provided path does not exist."
                 });
             }
 
@@ -34,13 +40,10 @@ namespace AssemblyValidatorAPI.Controllers
 
             if (configFiles.Length == 0)
             {
-                return BadRequest(new List<ValidationResult>
+                return BadRequest(new ValidationResult
                 {
-                    new ValidationResult
-                    {
-                        Status = ValidationStatus.Error,
-                        Message = "No config files found."
-                    }
+                    Status = ValidationStatus.Error,
+                    Message = "No config files found."
                 });
             }
 
@@ -49,13 +52,17 @@ namespace AssemblyValidatorAPI.Controllers
                 try
                 {
                     var xdoc = XDocument.Load(configPath);
-                    foreach (var element in xdoc.Root.Elements("assembly"))
+                    var root = xdoc.Root;
+                    if (root != null)
                     {
-                        var name = element.Attribute("name")?.Value;
-                        var version = element.Attribute("version")?.Value;
-                        if (name != null && version != null)
+                        foreach (var element in root.Elements("assembly"))
                         {
-                            configData[name] = version;
+                            var name = element.Attribute("name")?.Value;
+                            var version = element.Attribute("version")?.Value;
+                            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(version))
+                            {
+                                configData[name] = version;
+                            }
                         }
                     }
                 }
@@ -84,7 +91,9 @@ namespace AssemblyValidatorAPI.Controllers
                     continue;
                 }
 
-                var fileVersion = FileVersionInfo.GetVersionInfo(assemblyPath).FileVersion;
+                var fileVersionInfo = FileVersionInfo.GetVersionInfo(assemblyPath);
+                var fileVersion = fileVersionInfo.FileVersion ?? "Unknown";
+
                 if (fileVersion != assembly.Value)
                 {
                     results.Add(new ValidationResult

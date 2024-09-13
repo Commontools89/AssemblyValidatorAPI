@@ -31,3 +31,4 @@ D:\VersionValidatorAPI\AssemblyValidatorAPI\obj\Debug\net8.0\refint\AssemblyVali
 D:\VersionValidatorAPI\AssemblyValidatorAPI\obj\Debug\net8.0\AssemblyValidatorAPI.pdb
 D:\VersionValidatorAPI\AssemblyValidatorAPI\obj\Debug\net8.0\AssemblyValidatorAPI.genruntimeconfig.cache
 D:\VersionValidatorAPI\AssemblyValidatorAPI\obj\Debug\net8.0\ref\AssemblyValidatorAPI.dll
+D:\VersionValidatorAPI\AssemblyValidatorAPI\obj\Debug\net8.0\AssemblyValidatorAPI.sourcelink.json
