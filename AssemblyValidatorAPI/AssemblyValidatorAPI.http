@@ -1,0 +1,6 @@
+@AssemblyValidatorAPI_HostAddress = http://localhost:5018
+
+GET {{AssemblyValidatorAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
